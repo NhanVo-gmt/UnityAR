@@ -8,6 +8,7 @@ using UnityEngine.XR.ARSubsystems;
 public class PlaceObjectOnPlane : MonoBehaviour
 {
     public GameObject placementIndicator;
+    public GameObject dartboard;
     private Pose placementPose;
     private Transform placementTransform;
     private bool placementPoseIsValid = false;
@@ -27,11 +28,21 @@ public class PlaceObjectOnPlane : MonoBehaviour
     {
         UpdatePlacementPosition();
         UpdatePlacementIndicator();
+
+        if (placementPoseIsValid && Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
+        {
+            PlaceDartboard();
+        }
+    }
+
+    private void PlaceDartboard()
+    {
+        Instantiate(dartboard, placementIndicator.transform.position, placementIndicator.transform.rotation);
     }
 
     private void UpdatePlacementPosition()
     {
-        var screenCenter = Camera.current.ViewportToScreenPoint(new Vector3(0.5f, 0.5f));
+        var screenCenter = Camera.main.ViewportToScreenPoint(new Vector3(0.5f, 0.5f));
         if (m_RaycastManager.Raycast(screenCenter, s_Hits, TrackableType.PlaneWithinPolygon))
         {
             placementPoseIsValid = s_Hits.Count > 0;
